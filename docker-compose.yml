@@ -1,0 +1,41 @@
+version: '3.5'
+services:
+  #MySQL Service
+  nodejs:
+    image: library/mysql:latest
+    container_name: nodejs
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "33061:3306"
+    environment:
+      MYSQL_DATABASE: nodejs
+      MYSQL_ROOT_PASSWORD: rootpasswd
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+      MYSQL_USER: aleksandr
+      MYSQL_PASSWORD: qwerasdf1234
+    volumes:
+      - dbdata:/var/lib/mysql/
+#      - ./docker/conf/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - app-network
+  phpmyadmin:
+    image: 'phpmyadmin/phpmyadmin:latest'
+    environment:
+      - PMA_HOST=nodejs
+      - UPLOAD_LIMIT=900000000
+      - PMA_USER=root
+      - PMA_PASSWORD=rootpasswd
+    ports:
+      - '8090:80'
+    networks:
+      - app-network
+    depends_on:
+      - nodejs
+networks:
+  app-network:
+    driver: bridge
+volumes:
+  dbdata:
+    driver: local
